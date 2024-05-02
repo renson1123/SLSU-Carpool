@@ -1,3 +1,4 @@
+import 'package:capstone_project_carpool/methods/common_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 
@@ -17,6 +18,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController usernameTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
+
+  CommonMethods cMethods = CommonMethods();
+
+  checkIfNetworkIsAvailable()
+  {
+    cMethods.checkConnectivity(context);
+
+    signUpFormValidation();
+  }
+
+  signUpFormValidation()
+  {
+    if(firstNameTextEditingController.text.trim().isEmpty)
+      {
+        cMethods.displaySnackBar("First name cannot be empty", context);
+      }
+    else if (middleNameTextEditingController.text.trim().isEmpty)
+      {
+        cMethods.displaySnackBar("Middle name cannot be empty", context);
+      }
+    else if (lastNameTextEditingController.text.trim().isEmpty)
+      {
+        cMethods.displaySnackBar("Last name cannot be empty", context);
+      }
+    else if (employeeNumberTextEditingController.text.trim().isEmpty)
+      {
+        cMethods.displaySnackBar("Employee number cannot be empty", context);
+      }
+    else if (phoneNumberTextEditingController.text.trim().length != 11)
+      {
+        cMethods.displaySnackBar("Phone number must be 11 digits", context);
+      }
+    else if (!emailTextEditingController.text.contains("@"))
+      {
+        cMethods.displaySnackBar("Please enter a valid email.", context);
+      }
+    else if (passwordTextEditingController.text.trim().length < 5)
+      {
+        cMethods.displaySnackBar("Password must be at least 6 or more characters.", context);
+      }
+    else
+      {
+        // Register User
+
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +245,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               Center(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: ()
+                  {
+                    checkIfNetworkIsAvailable();
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                     padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 10),
