@@ -1,3 +1,5 @@
+import 'package:capstone_project_carpool/authentication/login_screen.dart';
+import 'package:capstone_project_carpool/authentication/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,12 +15,11 @@ class MyApp extends StatelessWidget
   {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginScreen(),
     );
   }
 }
