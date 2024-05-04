@@ -1,4 +1,8 @@
 import 'package:capstone_project_carpool/methods/common_methods.dart';
+import 'package:capstone_project_carpool/pages/home_page.dart';
+import 'package:capstone_project_carpool/widgets/loading_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 
@@ -60,9 +64,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     else
       {
-        // Register User
-
+        registerNewUser();
       }
+  }
+
+  registerNewUser() async
+  {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => LoadingDialog(messageText: "Registering your account..."),
+    );
+
+    // User Authentication
+    final User? userFirebase = (
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailTextEditingController.text.trim(),
+          password: passwordTextEditingController.text.trim(),
+      ).catchError((errorMsg)
+      {
+        Navigator.pop(context);
+        cMethods.displaySnackBar(errorMsg, context);
+      })
+    ).user;
+
+    if(!context.mounted) return;
+    Navigator.pop(context);
+
+    DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase!.uid);
+    Map userDataMap =
+        {
+          "name": usernameTextEditingController.text.trim(),
+          "email": emailTextEditingController.text.trim(),
+          "phone": phoneNumberTextEditingController.text.trim(),
+          "id": userFirebase.uid,
+          "blockStatus": "no",
+        };
+
+    usersRef.set(userDataMap);
+
+    Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
+
   }
 
   @override

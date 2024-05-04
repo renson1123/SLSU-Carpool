@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
 {
-  TextEditingController usernameTextEditingController = TextEditingController();
+  TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
@@ -45,10 +45,10 @@ class _LoginScreenState extends State<LoginScreen>
 
                     // Email
                     TextField(
-                      controller: usernameTextEditingController,
-                      keyboardType: TextInputType.text,
+                      controller: emailTextEditingController,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        labelText: "Username",
+                        labelText: "Email",
                         labelStyle: TextStyle(
                           fontSize: 14,
                         ),
