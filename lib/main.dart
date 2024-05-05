@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget
   Widget build(BuildContext context)
   {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SLSU  Carpool Services',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
