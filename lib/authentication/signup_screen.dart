@@ -94,9 +94,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase!.uid);
     Map userDataMap =
         {
-          "name": usernameTextEditingController.text.trim(),
-          "email": emailTextEditingController.text.trim(),
+          "firstName": firstNameTextEditingController.text.trim(),
+          "middleName": middleNameTextEditingController.text.trim(),
+          "lastName": lastNameTextEditingController.text.trim(),
+          "employeeNumber": employeeNumberTextEditingController.text.trim(),
           "phone": phoneNumberTextEditingController.text.trim(),
+          "email": emailTextEditingController.text.trim(),
           "id": userFirebase.uid,
           "blockStatus": "no",
         };
