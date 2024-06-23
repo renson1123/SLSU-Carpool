@@ -70,12 +70,11 @@ class _LoginScreenState extends State<LoginScreen>
     if(userFirebase != null)
       {
         DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase.uid);
-        usersRef.once().then((snap)
+        await usersRef.once().then((snap)
         {
           if(snap.snapshot.value != null)
             {
-              if((snap.snapshot.value as Map)
-                ["blockStatus"] == "no")
+              if((snap.snapshot.value as Map)["blockStatus"] == "no")
                 {
                   userName = (snap.snapshot.value as Map)["name"];
                   Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
@@ -172,9 +171,6 @@ class _LoginScreenState extends State<LoginScreen>
                           "LOGIN"
                       ),
                     ),
-
-
-
                   ],
                 ),
               ),

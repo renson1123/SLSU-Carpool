@@ -106,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     usersRef.set(userDataMap);
 
-    Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (c) => LoginScreen()));
 
   }
 
