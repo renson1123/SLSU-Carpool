@@ -178,18 +178,26 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
 
-              ListTile(
-                leading: IconButton(
-                  onPressed: (){},
-                  icon: const Icon(
-                    Icons.logout,
-                    color: Colors.grey,
+              GestureDetector(
+                onTap: (){
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+                },
+                child: ListTile(
+                  leading: IconButton(
+                    onPressed: (){
+                      
+                    },
+                    icon: const Icon(
+                      Icons.logout,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-                title: const Text(
-                  "Logout",
-                  style: TextStyle(
-                    color: Colors.grey,
+                  title: const Text(
+                    "Logout",
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ),
@@ -203,6 +211,7 @@ class _HomePageState extends State<HomePage>
 
           // Google Map
           GoogleMap(
+            padding: const EdgeInsets.only(top: 26),
             mapType: MapType.normal,
             myLocationEnabled: true,
             initialCameraPosition: googlePlexInitialPosition,

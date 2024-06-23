@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
     if(userFirebase != null)
       {
         DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase.uid);
-        usersRef.once().then((snap)
+        await usersRef.once().then((snap)
         {
           if(snap.snapshot.value != null)
             {
