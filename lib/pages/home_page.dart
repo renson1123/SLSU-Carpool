@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
+import 'package:capstone_project_carpool/methods/common_methods.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage>
   GoogleMapController? controllerGoogleMap;
   Position? currentPositionOfUser;
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
+  CommonMethods cMethods = CommonMethods();
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -49,6 +54,36 @@ class _HomePageState extends State<HomePage>
     CameraPosition cameraPosition = CameraPosition(target: positionOfUserInLatLng, zoom: 15);
     controllerGoogleMap!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
+    await getUserInfoAndCheckBlockStatus();
+
+  }
+
+  getUserInfoAndCheckBlockStatus() async
+  {
+    DatabaseReference usersRef = FirebaseDatabase.instance.ref()
+        .child("users")
+        .child(FirebaseAuth.instance.currentUser!.uid);
+
+    await usersRef.once().then((snap)
+    {
+      if(snap.snapshot.value != null)
+      {
+        if((snap.snapshot.value as Map)["blockStatus"] == "no")
+        {
+          setState(() {
+            userName = (snap.snapshot.value as Map)["firstName"];
+          });
+        } else {
+          FirebaseAuth.instance.signOut();
+          Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+          cMethods.displaySnackBar("Client account is blocked, Contact Admin.", context);
+        }
+      } else
+      {
+        FirebaseAuth.instance.signOut();
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
+      }
+    });
   }
 
   @override

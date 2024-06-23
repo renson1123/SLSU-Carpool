@@ -70,13 +70,13 @@ class _LoginScreenState extends State<LoginScreen>
     if(userFirebase != null)
       {
         DatabaseReference usersRef = FirebaseDatabase.instance.ref().child("users").child(userFirebase.uid);
-        await usersRef.once().then((snap)
+        usersRef.once().then((snap)
         {
           if(snap.snapshot.value != null)
             {
               if((snap.snapshot.value as Map)["blockStatus"] == "no")
                 {
-                  userName = (snap.snapshot.value as Map)["name"];
+                  userName = (snap.snapshot.value as Map)["firstName"];
                   Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
                 } else {
                 FirebaseAuth.instance.signOut();
