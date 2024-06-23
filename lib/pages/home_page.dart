@@ -26,6 +26,8 @@ class _HomePageState extends State<HomePage>
   Position? currentPositionOfUser;
   GlobalKey<ScaffoldState> sKey = GlobalKey<ScaffoldState>();
   CommonMethods cMethods = CommonMethods();
+  double searchContainerHeight = 276;
+  double bottomMapPadding = 0;
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -211,7 +213,7 @@ class _HomePageState extends State<HomePage>
 
           // Google Map
           GoogleMap(
-            padding: const EdgeInsets.only(top: 26),
+            padding: EdgeInsets.only(top: 26, bottom: bottomMapPadding),
             mapType: MapType.normal,
             myLocationEnabled: true,
             initialCameraPosition: googlePlexInitialPosition,
@@ -223,6 +225,10 @@ class _HomePageState extends State<HomePage>
               // updateMapTheme(controllerGoogleMap!);
 
               googleMapCompleterController.complete(controllerGoogleMap);
+
+              setState(() {
+                bottomMapPadding = 300;
+              });
 
               getCurrentLiveLocationOfUser();
             },
@@ -262,6 +268,103 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
           ),
+
+          // Search Location icon button
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -80,
+            child: Container(
+              height: searchContainerHeight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: ()
+                    {
+
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24),
+                    ),
+                    child: const Icon(
+                      Icons.home,
+                      color: Colors.white,
+                      size: 15,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: ()
+                    {
+
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24)
+                    ),
+                    child: const Icon(
+                      Icons.car_rental,
+                      color: Colors.white,
+                      size: 15,
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: ()
+                      {
+
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24)
+                      ),
+                      child: const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: ()
+                    {
+
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24)
+                    ),
+                    child: const Icon(
+                      Icons.chat,
+                      color: Colors.white,
+                      size: 15,
+                    ),
+                  ),
+
+                  ElevatedButton(
+                    onPressed: ()
+                    {
+
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24)
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
         ],
       ),
     );
