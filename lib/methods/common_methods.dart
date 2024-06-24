@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
+import 'package:capstone_project_carpool/models/address_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class CommonMethods
 {
@@ -60,7 +63,13 @@ class CommonMethods
     if(responseFromAPI != "Error")
     {
       humanReadableAddress = responseFromAPI["results"][0]["formatted_address"];
-      print("humanReadableAddress = " + humanReadableAddress);
+
+      AddressModel model = AddressModel();
+      model.humanReadableAddress = humanReadableAddress;
+      model.longitudePosition = position.longitude;
+      model.latitudePosition = position.latitude;
+
+      Provider.of<AppInfo>(context, listen: false).updateStartingPointLocation(model);
     }
 
     return humanReadableAddress;

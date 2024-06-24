@@ -1,3 +1,4 @@
+import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/authentication/signup_screen.dart';
 import 'package:capstone_project_carpool/pages/home_page.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async{
 
@@ -29,13 +31,16 @@ class MyApp extends StatelessWidget
   @override
   Widget build(BuildContext context)
   {
-    return MaterialApp(
-      title: 'SLSU  Carpool Services',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
+    return ChangeNotifierProvider(
+      create: (context) => AppInfo(),
+      child: MaterialApp(
+        title: 'TRAMP',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: Colors.black,
+        ),
+        home: FirebaseAuth.instance.currentUser == null ? LoginScreen() : HomePage(),
       ),
-      home: FirebaseAuth.instance.currentUser == null ? LoginScreen() : HomePage(),
     );
   }
 }
