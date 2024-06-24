@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
 import 'package:capstone_project_carpool/methods/common_methods.dart';
+import 'package:capstone_project_carpool/pages/search_destination_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -269,7 +270,6 @@ class _HomePageState extends State<HomePage>
               ),
           ),
 
-          // Search Location icon button
           Positioned(
             left: 0,
             right: 0,
@@ -279,6 +279,7 @@ class _HomePageState extends State<HomePage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  // Home Navigation
                   ElevatedButton(
                     onPressed: ()
                     {
@@ -295,6 +296,8 @@ class _HomePageState extends State<HomePage>
                       size: 15,
                     ),
                   ),
+
+                  // Trips Navigation
                   ElevatedButton(
                     onPressed: ()
                     {
@@ -311,10 +314,12 @@ class _HomePageState extends State<HomePage>
                       size: 15,
                     ),
                   ),
+
+                  // Map Search Navigation
                   ElevatedButton(
                       onPressed: ()
                       {
-
+                        Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
@@ -328,6 +333,7 @@ class _HomePageState extends State<HomePage>
                       ),
                   ),
 
+                  // Message Navigation
                   ElevatedButton(
                     onPressed: ()
                     {
@@ -345,6 +351,7 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
 
+                  // Profile Navigation
                   ElevatedButton(
                     onPressed: ()
                     {
