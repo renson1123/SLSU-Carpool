@@ -1,3 +1,7 @@
+import 'package:capstone_project_carpool/global/global_var.dart';
+import 'package:capstone_project_carpool/methods/common_methods.dart';
+import 'package:capstone_project_carpool/models/prediction_model.dart';
+import 'package:capstone_project_carpool/widgets/prediction_place_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +19,34 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
 {
   TextEditingController startingPointTextEditingController = TextEditingController();
   TextEditingController destinationPointTextEditingController = TextEditingController();
+  List<PredictionModel> destinationPointPredictionPlacesList = [];
+
+  // Google Places API = Place AutoComplete
+  searchLocation(String locationName) async
+  {
+    if(locationName.length > 1)
+    {
+      String apiPlacesUrl =  "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$locationName&key=$googleMapKey&components=country:ph";
+
+      var responseFromPlacesAPI  = await CommonMethods.sendRequestToAPI(apiPlacesUrl);
+
+      if(responseFromPlacesAPI == "Error")
+      {
+        return;
+      }
+      if (responseFromPlacesAPI["status"] == "OK")
+      {
+        var predictionResultInJSON = responseFromPlacesAPI["predictions"];
+        var predictionList  = (predictionResultInJSON as List).map((eachPlacePrediction) => PredictionModel.fromJSON(eachPlacePrediction)).toList();
+
+        setState(() {
+          destinationPointPredictionPlacesList = predictionList;
+        });
+
+        print("predictionResultInJSON = " + predictionResultInJSON.toString());
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context)
@@ -135,6 +167,10 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
                                 padding: const EdgeInsets.all(3),
                                 child: TextField(
                                   controller: destinationPointTextEditingController,
+                                  onChanged: (inputText)
+                                  {
+                                    searchLocation(inputText);
+                                  },
                                   decoration: const InputDecoration(
                                     hintText: "Destination Point Address",
                                     fillColor: Colors.white12,
@@ -154,6 +190,29 @@ class _SearchDestinationPageState extends State<SearchDestinationPage>
                 ),
               ),
             ),
+
+            // Display prediction results for destination place
+            (destinationPointPredictionPlacesList.length > 0)
+                ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListView.separated(
+                      padding: const EdgeInsets.all(0),
+                      itemBuilder: (context, index)
+                      {
+                        return Card(
+                          elevation: 3,
+                          child: PredictionPlaceUI(
+                            predictedPlaceData: destinationPointPredictionPlacesList[index],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 2,),
+                      itemCount: destinationPointPredictionPlacesList.length,
+                      shrinkWrap: true,
+                      physics: const ClampingScrollPhysics(),
+                  ),
+                )
+                : Container(),
           ],
         ),
       ),
