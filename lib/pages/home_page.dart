@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
 import 'package:capstone_project_carpool/methods/common_methods.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget
 {
@@ -319,9 +321,15 @@ class _HomePageState extends State<HomePage>
 
                   // Map Search Navigation
                   ElevatedButton(
-                      onPressed: ()
+                      onPressed: () async
                       {
-                        Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
+                        var responseFromSearchPage = await Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchDestinationPage()));
+
+                        if(responseFromSearchPage == "placeSelected")
+                        {
+                          String destinationPointLocation = Provider.of<AppInfo>(context, listen: false).destinationPointLocation!.placeName ?? "";
+                          print("destinationPointLocation = " + destinationPointLocation);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
