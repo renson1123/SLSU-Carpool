@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
@@ -8,6 +9,7 @@ import 'package:capstone_project_carpool/methods/common_methods.dart';
 import 'package:capstone_project_carpool/pages/search_destination_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,6 +33,7 @@ class _HomePageState extends State<HomePage>
   CommonMethods cMethods = CommonMethods();
   double searchContainerHeight = 276;
   double bottomMapPadding = 0;
+  double rideDetailsContainerHeight = 0;
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -90,6 +93,16 @@ class _HomePageState extends State<HomePage>
         FirebaseAuth.instance.signOut();
         Navigator.push(context, MaterialPageRoute(builder: (c)=> LoginScreen()));
       }
+    });
+  }
+
+  displayUserRideDetailsContainer()
+  {
+    // Draw Routes between starting point and destination point
+    setState(() {
+      searchContainerHeight = 0;
+      bottomMapPadding = 240;
+      rideDetailsContainerHeight = 242;
     });
   }
 
@@ -327,8 +340,7 @@ class _HomePageState extends State<HomePage>
 
                         if(responseFromSearchPage == "placeSelected")
                         {
-                          String destinationPointLocation = Provider.of<AppInfo>(context, listen: false).destinationPointLocation!.placeName ?? "";
-                          print("destinationPointLocation = " + destinationPointLocation);
+                          displayUserRideDetailsContainer();
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -381,7 +393,85 @@ class _HomePageState extends State<HomePage>
                 ],
               ),
             ),
-          )
+          ),
+
+          // Ride Details Container
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              height: rideDetailsContainerHeight,
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+                boxShadow:
+                  [
+                    BoxShadow(
+                      color: Colors.white12,
+                      blurRadius: 15.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(.7, .7),
+                    ),
+                  ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: SizedBox(
+                        height: 190,
+                        child: Card(
+                          elevation: 10,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * .70,
+                            color: Colors.black45,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8, bottom: 8),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "2 km",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: (){},
+                                    child: Image.asset(
+                                      "assets/images/uberexec.png",
+                                      height: 122,
+                                      width: 122,
+                                    ),
+                                  ),
+
+                                  const Text(
+                                    "\$ 12",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white70,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
