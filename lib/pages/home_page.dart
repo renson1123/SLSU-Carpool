@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
+import 'package:capstone_project_carpool/global/trip_var.dart';
 import 'package:capstone_project_carpool/methods/common_methods.dart';
 import 'package:capstone_project_carpool/models/direction_details.dart';
 import 'package:capstone_project_carpool/pages/search_destination_page.dart';
@@ -37,11 +38,14 @@ class _HomePageState extends State<HomePage>
   double searchContainerHeight = 276;
   double bottomMapPadding = 0;
   double rideDetailsContainerHeight = 0;
+  double requestContainerHeight = 0;
+  double tripContainerHeight = 0;
   DirectionDetails? tripDirectionDetailsInfo;
   List<LatLng> polylineCoordinates = [];
   Set<Polyline> polylineSet = {};
   Set<Marker> markerSet = {};
   Set<Circle> circleSet = {};
+  bool isDrawerOpened = true;
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -113,6 +117,7 @@ class _HomePageState extends State<HomePage>
       searchContainerHeight = 0;
       bottomMapPadding = 240;
       rideDetailsContainerHeight = 242;
+      isDrawerOpened = false;
     });
   }
 
@@ -246,6 +251,29 @@ class _HomePageState extends State<HomePage>
     setState(() {
       circleSet.add(startingPointCircle);
       circleSet.add(destinationPointCircle);
+    });
+  }
+
+  resetAppNow()
+  {
+    setState(() {
+      polylineCoordinates.clear();
+      polylineSet.clear();
+      markerSet.clear();
+      circleSet.clear();
+      rideDetailsContainerHeight = 0;
+      requestContainerHeight = 0;
+      tripContainerHeight = 0;
+      searchContainerHeight = 276;
+      bottomMapPadding = 300;
+      isDrawerOpened = true;
+
+      status = "";
+      nameDriver = "";
+      photoDriver = "";
+      phoneNumberDriver = "";
+      carDetailsDriver = "";
+      tripStatusDisplay = "Driver is Arriving";
     });
   }
 
@@ -405,7 +433,13 @@ class _HomePageState extends State<HomePage>
               child: GestureDetector(
                 onTap: ()
                 {
-                  sKey.currentState!.openDrawer();
+                  if (isDrawerOpened == true)
+                  {
+                    sKey.currentState!.openDrawer();
+                  }  
+                  else {
+                    resetAppNow();
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -421,11 +455,11 @@ class _HomePageState extends State<HomePage>
                       ),
                     ],
                   ),
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     backgroundColor: Colors.grey,
                     radius: 20,
                     child: Icon(
-                      Icons.menu,
+                      isDrawerOpened == true ?Icons.menu : Icons.close,
                       color: Colors.black87,
                     ),
                   ),
