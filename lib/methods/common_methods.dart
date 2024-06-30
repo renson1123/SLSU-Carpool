@@ -6,8 +6,11 @@ import 'package:capstone_project_carpool/models/address_model.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
+import '../models/direction_details.dart';
 
 class CommonMethods
 {
@@ -74,4 +77,31 @@ class CommonMethods
 
     return humanReadableAddress;
   }
+
+  // Directions API
+  static Future<DirectionDetails?> getDirectionDetailsFromAPI(LatLng source, LatLng destination) async
+  {
+    String urlDirectionsAPI = "https://maps.googleapis.com/maps/api/directions/json?destination=${destination.latitude},${destination.longitude}&origin=${source.latitude},${source.longitude}&mode=driving&key=$googleMapKey";
+
+    var responseFromDirectionsAPI = await sendRequestToAPI(urlDirectionsAPI);
+
+    if (responseFromDirectionsAPI == "error")
+    {
+      return null;
+    }
+
+    DirectionDetails detailsModel = DirectionDetails();
+
+    detailsModel.distanceTextString = responseFromDirectionsAPI["routes"][0]["legs"][0]["distance"]["text"];
+    detailsModel.distanceValueDigits = responseFromDirectionsAPI["routes"][0]["legs"][0]["distance"]["value"];
+
+    detailsModel.durationTextString = responseFromDirectionsAPI["routes"][0]["legs"][0]["duration"]["text"];
+    detailsModel.durationValueDigits = responseFromDirectionsAPI["routes"][0]["legs"][0]["duration"]["value"];
+
+    detailsModel.encodedPoints = responseFromDirectionsAPI["routes"][0]["overview_polyline"]["points"];
+
+    return detailsModel;
+
+  }
+
 }

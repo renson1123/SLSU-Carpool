@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen>
               if((snap.snapshot.value as Map)["blockStatus"] == "no")
                 {
                   userName = (snap.snapshot.value as Map)["firstName"];
-                  Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (c) => const HomePage()));
                 } else {
                 FirebaseAuth.instance.signOut();
                 cMethods.displaySnackBar("Client account is blocked, Contact Admin.", context);

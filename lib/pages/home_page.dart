@@ -6,7 +6,9 @@ import 'package:capstone_project_carpool/appinfo/app_info.dart';
 import 'package:capstone_project_carpool/authentication/login_screen.dart';
 import 'package:capstone_project_carpool/global/global_var.dart';
 import 'package:capstone_project_carpool/methods/common_methods.dart';
+import 'package:capstone_project_carpool/models/direction_details.dart';
 import 'package:capstone_project_carpool/pages/search_destination_page.dart';
+import 'package:capstone_project_carpool/widgets/loading_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,6 +36,7 @@ class _HomePageState extends State<HomePage>
   double searchContainerHeight = 276;
   double bottomMapPadding = 0;
   double rideDetailsContainerHeight = 0;
+  DirectionDetails? tripDirectionDetailsInfo;
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -96,14 +99,39 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  displayUserRideDetailsContainer()
+  displayUserRideDetailsContainer() async
   {
-    // Draw Routes between starting point and destination point
+    // Directions API - Draw Routes between starting point and destination point
+    await retrieveDirectionDetails();
+
     setState(() {
       searchContainerHeight = 0;
       bottomMapPadding = 240;
       rideDetailsContainerHeight = 242;
     });
+  }
+
+  retrieveDirectionDetails() async
+  {
+    var startingPointLocation = Provider.of<AppInfo>(context, listen: false).startingPointLocation;
+    var destinationPointLocation = Provider.of<AppInfo>(context, listen: false).destinationPointLocation;
+
+    var startingPointGeographicCoordinates = LatLng(startingPointLocation!.latitudePosition!, startingPointLocation.longitudePosition!);
+    var destinationPointGeographicCoordinates = LatLng(destinationPointLocation!.latitudePosition!, destinationPointLocation.longitudePosition!);
+
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) => LoadingDialog(messageText: "Getting directions..."),
+    );
+
+    // Sending Request to Directions API
+    var detailsFromDirectionAPI = await CommonMethods.getDirectionDetailsFromAPI(startingPointGeographicCoordinates, destinationPointGeographicCoordinates);
+
+    setState(() {
+      tripDirectionDetailsInfo = detailsFromDirectionAPI;
+    });
+
   }
 
   @override
@@ -434,12 +462,29 @@ class _HomePageState extends State<HomePage>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text(
-                                    "2 km",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white70,
-                                      fontWeight: FontWeight.bold,
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8, right: 8),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          (tripDirectionDetailsInfo != null) ? tripDirectionDetailsInfo!.distanceTextString! : "",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+
+                                        Text(
+                                          (tripDirectionDetailsInfo != null) ? tripDirectionDetailsInfo!.durationTextString! : "",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white70,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
 
