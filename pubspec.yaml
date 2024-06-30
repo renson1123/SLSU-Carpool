@@ -45,6 +45,7 @@ dependencies:
   geolocator:
   http:
   provider:
+  flutter_polyline_points:
   image_picker:
 
 dev_dependencies:

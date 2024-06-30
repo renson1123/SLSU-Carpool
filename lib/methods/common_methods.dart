@@ -104,4 +104,8 @@ class CommonMethods
 
   }
 
+  transportationDetails(DirectionDetails directionDetails)
+  {
+
+  }
 }

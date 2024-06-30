@@ -14,6 +14,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,10 @@ class _HomePageState extends State<HomePage>
   double bottomMapPadding = 0;
   double rideDetailsContainerHeight = 0;
   DirectionDetails? tripDirectionDetailsInfo;
+  List<LatLng> polylineCoordinates = [];
+  Set<Polyline> polylineSet = {};
+  Set<Marker> markerSet = {};
+  Set<Circle> circleSet = {};
 
   void updateMapTheme(GoogleMapController controller)
   {
@@ -132,6 +137,116 @@ class _HomePageState extends State<HomePage>
       tripDirectionDetailsInfo = detailsFromDirectionAPI;
     });
 
+    Navigator.pop(context);
+
+    // Draw route from starting to destination
+    PolylinePoints pointsPolyline = PolylinePoints();
+    List<PointLatLng> latLngPointsFromStartingToDestination = pointsPolyline.decodePolyline(tripDirectionDetailsInfo!.encodedPoints!);
+
+    polylineCoordinates.clear();
+    if (latLngPointsFromStartingToDestination.isNotEmpty)
+    {
+      latLngPointsFromStartingToDestination.forEach((PointLatLng latLngPoint)
+      {
+        polylineCoordinates.add(LatLng(latLngPoint.latitude, latLngPoint.longitude));
+      });
+    }  
+
+    polylineSet.clear();
+    setState(() {
+      Polyline polyline = Polyline(
+          polylineId: const PolylineId("polylineID"),
+          color: Colors.pink,
+          points: polylineCoordinates,
+          jointType: JointType.round,
+          width: 4,
+          startCap: Cap.roundCap,
+          endCap: Cap.roundCap,
+          geodesic: true,
+      );
+
+      polylineSet.add(polyline);
+    });
+
+
+    // Fitting the Polyline into the Map
+    LatLngBounds boundsLatLng;
+    if (startingPointGeographicCoordinates.latitude > destinationPointGeographicCoordinates.latitude
+        && startingPointGeographicCoordinates.longitude > destinationPointGeographicCoordinates.longitude)
+    {
+      boundsLatLng = LatLngBounds(
+          southwest: destinationPointGeographicCoordinates,
+          northeast: startingPointGeographicCoordinates
+      );
+    }
+    else if (startingPointGeographicCoordinates.longitude > destinationPointGeographicCoordinates.longitude)
+      {
+        boundsLatLng = LatLngBounds(
+          southwest: LatLng(startingPointGeographicCoordinates.latitude, destinationPointGeographicCoordinates.longitude),
+          northeast: LatLng(destinationPointGeographicCoordinates.latitude, startingPointGeographicCoordinates.longitude),
+        );
+      }
+    else if (startingPointGeographicCoordinates.latitude > destinationPointGeographicCoordinates.latitude)
+      {
+        boundsLatLng = LatLngBounds(
+            southwest: LatLng(destinationPointGeographicCoordinates.latitude, startingPointGeographicCoordinates.longitude),
+            northeast: LatLng(startingPointGeographicCoordinates.latitude, destinationPointGeographicCoordinates.longitude),
+        );
+      }
+    else {
+      boundsLatLng = LatLngBounds(
+          southwest: startingPointGeographicCoordinates,
+          northeast: destinationPointGeographicCoordinates,
+      );
+    }
+
+    controllerGoogleMap!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 72));
+
+    // Starting Point Marker
+    Marker startingPointMarker = Marker(
+        markerId: const MarkerId("startingPointMarkerID"),
+        position: startingPointGeographicCoordinates,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        infoWindow: InfoWindow(title: startingPointLocation.placeName, snippet: "Starting Point"),
+    );
+
+    // Destination Point Marker
+    Marker destinationPointMarker = Marker(
+      markerId: const MarkerId("destinationPointMarkerID"),
+      position: destinationPointGeographicCoordinates,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
+      infoWindow: InfoWindow(title: destinationPointLocation.placeName, snippet: "Destination Point"),
+    );
+
+    setState(() {
+      markerSet.add(startingPointMarker);
+      markerSet.add(destinationPointMarker);
+    });
+
+
+    // Adding Circles to starting and destination points
+    Circle startingPointCircle = Circle(
+        circleId: const CircleId("startingPointCircleID"),
+        strokeColor: Colors.blue,
+        strokeWidth: 4,
+        radius: 14,
+        center: startingPointGeographicCoordinates,
+        fillColor: Colors.pink,
+    );
+
+    Circle destinationPointCircle = Circle(
+      circleId: const CircleId("destinationPointCircleID"),
+      strokeColor: Colors.blue,
+      strokeWidth: 4,
+      radius: 14,
+      center: destinationPointGeographicCoordinates,
+      fillColor: Colors.pink,
+    );
+
+    setState(() {
+      circleSet.add(startingPointCircle);
+      circleSet.add(destinationPointCircle);
+    });
   }
 
   @override
@@ -262,6 +377,9 @@ class _HomePageState extends State<HomePage>
             padding: EdgeInsets.only(top: 26, bottom: bottomMapPadding),
             mapType: MapType.normal,
             myLocationEnabled: true,
+            polylines: polylineSet,
+            markers: markerSet,
+            circles: circleSet,
             initialCameraPosition: googlePlexInitialPosition,
             onMapCreated: (GoogleMapController mapController)
             {
@@ -497,14 +615,14 @@ class _HomePageState extends State<HomePage>
                                     ),
                                   ),
 
-                                  const Text(
-                                    "\$ 12",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.white70,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                  // const Text(
+                                  //   "\$ 12",
+                                  //   style: TextStyle(
+                                  //     fontSize: 18,
+                                  //     color: Colors.white70,
+                                  //     fontWeight: FontWeight.bold,
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
